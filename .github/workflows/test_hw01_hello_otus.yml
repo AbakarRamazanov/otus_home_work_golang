@@ -1,0 +1,19 @@
+name: Test hw01_hello_otus
+
+on:
+  push:
+    branches: [ hw01_hello_otus ]
+  pull_request:
+    branches: [ hw01_hello_otus ]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Test hw01_hello_otus
+    - run: cd hw01_hello_otus
+    - run: ./test.sh
