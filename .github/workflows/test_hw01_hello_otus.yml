@@ -22,3 +22,5 @@ jobs:
     - run: cd hw01_hello_otus && go test -v -count=1 -race -timeout=1m .
     - name: Run golangci-lint
       uses: golangci/golangci-lint-action@v3.1.0
+      with:
+        working-directory: hw01_hello_otus
