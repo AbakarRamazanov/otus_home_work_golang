@@ -15,3 +15,10 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - run: cd hw01_hello_otus && pwd && ls -la && ./test.sh
+    # - run: sudo apt update && sudo apt update
+    - uses: actions/setup-go@v3
+      with:
+        go-version: '>=1.18.0'
+    - run: cd hw01_hello_otus && go test -v -count=1 -race -timeout=1m .
+    - name: Run golangci-lint
+      uses: golangci/golangci-lint-action@v3.1.0
