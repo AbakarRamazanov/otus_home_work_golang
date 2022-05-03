@@ -14,6 +14,5 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    - name: Test hw01_hello_otus
     - run: cd hw01_hello_otus
     - run: ./test.sh
