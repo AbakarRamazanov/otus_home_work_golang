@@ -14,7 +14,4 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    - run: cd hw01_hello_otus
-    - run: pwd
-    - run: ls -la
-    - run: ./test.sh
+    - run: cd hw01_hello_otus && pwd && ls -la && ./test.sh
