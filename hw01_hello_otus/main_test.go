@@ -15,7 +15,7 @@ func TestReverse(t *testing.T) {
 		{"Hello, OTUS!", "!SUTO ,olleH"},
 		{"abcd", "dcba"},
 		{" 123 =", "= 321 "},
-		// {"+-*/", "/*-+"},
+		{"+-*/", "/*-+"},
 	}
 
 	for _, tc := range tests {
