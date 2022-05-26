@@ -16,17 +16,11 @@ type letterCount struct {
 
 func Unpack(inputString string) (string, error) {
 	inputRunes := []rune(inputString)
-	// err := checkBackslash(inputRunes)
-	// if err != nil {
-	// 	return "", err
-	// }
 	l, err := splitString(inputRunes)
 	if err != nil {
 		return "", err
 	}
-	// deleteBackslash(l)
-	resultTwo := generateString(l)
-	return resultTwo, nil
+	return generateString(l), nil
 }
 
 func splitString(inputRune []rune) ([]letterCount, error) {
