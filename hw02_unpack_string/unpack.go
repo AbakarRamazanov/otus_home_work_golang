@@ -2,7 +2,6 @@ package hw02unpackstring
 
 import (
 	"errors"
-	"fmt"
 	"strconv"
 	"strings"
 	"unicode"
@@ -39,7 +38,7 @@ func splitString(inputRune []rune) ([]letterCount, error) {
 				return nil, ErrInvalidString
 			}
 			inputRune = append(inputRune[:i], withoutBS...)
-			i += 1
+			i++
 			continue
 		}
 		if unicode.IsDigit(inputRune[i]) {
@@ -57,7 +56,6 @@ func splitString(inputRune []rune) ([]letterCount, error) {
 	if len(inputRune) > 0 {
 		l = append(l, letterCount{inputRune, 1})
 	}
-	fmt.Println()
 	return l, nil
 }
 
