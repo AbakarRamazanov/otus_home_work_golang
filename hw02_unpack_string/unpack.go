@@ -34,13 +34,6 @@ func splitString(inputRune []rune) ([]letterCount, error) {
 	l := make([]letterCount, 0)
 	for i := 0; i < len(inputRune); {
 		if inputRune[i] == '\\' {
-			fmt.Println("before input:", string(inputRune))
-			dInputRune, err := checkBackslash2(inputRune[i:])
-			if err != nil {
-				return nil, ErrInvalidString
-			}
-			inputRune := append(inputRune[:i], dInputRune...)
-			fmt.Println("after input:", string(inputRune))
 			i += 2
 			continue
 		}
