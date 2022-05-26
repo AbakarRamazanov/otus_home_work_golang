@@ -17,15 +17,15 @@ type letterCount struct {
 
 func Unpack(inputString string) (string, error) {
 	inputRunes := []rune(inputString)
-	err := checkBackslash(inputRunes)
-	if err != nil {
-		return "", err
-	}
+	// err := checkBackslash(inputRunes)
+	// if err != nil {
+	// 	return "", err
+	// }
 	l, err := splitString(inputRunes)
 	if err != nil {
 		return "", err
 	}
-	deleteBackslash(l)
+	// deleteBackslash(l)
 	resultTwo := generateString(l)
 	return resultTwo, nil
 }
@@ -34,15 +34,20 @@ func splitString(inputRune []rune) ([]letterCount, error) {
 	l := make([]letterCount, 0)
 	for i := 0; i < len(inputRune); {
 		if inputRune[i] == '\\' {
-			i += 2
+			withoutBS, err := processingBackslash(inputRune[i:])
+			if err != nil {
+				return nil, ErrInvalidString
+			}
+			inputRune = append(inputRune[:i], withoutBS...)
+			i += 1
 			continue
 		}
 		if unicode.IsDigit(inputRune[i]) {
-			if i == 0 {
-				return nil, ErrInvalidString
+			lC, err := processingDigit(inputRune[:i+1])
+			if err != nil {
+				return nil, err
 			}
-			count, _ := strconv.Atoi(string(inputRune[i : i+1]))
-			l = append(l, letterCount{letters: inputRune[:i], count: count})
+			l = append(l, *lC)
 			inputRune = inputRune[i+1:]
 			i = 0
 			continue
@@ -52,47 +57,27 @@ func splitString(inputRune []rune) ([]letterCount, error) {
 	if len(inputRune) > 0 {
 		l = append(l, letterCount{inputRune, 1})
 	}
+	fmt.Println()
 	return l, nil
 }
 
-func checkBackslash2(input []rune) ([]rune, error) {
+func processingBackslash(input []rune) ([]rune, error) {
 	if len(input) < 2 {
 		return nil, ErrInvalidString
 	}
 	if unicode.IsDigit(input[1]) || input[1] == '\\' {
 		input = input[1:]
-		fmt.Println("checkBackslash2 input:", string(input))
 		return input, nil
 	}
 	return nil, ErrInvalidString
 }
 
-func checkBackslash(input []rune) error {
-	i := 0
-	for ; i < len(input)-1; i++ {
-		if input[i] == '\\' {
-			if unicode.IsDigit(input[i+1]) || input[i+1] == '\\' {
-				i++
-			} else {
-				return ErrInvalidString
-			}
-		}
+func processingDigit(input []rune) (*letterCount, error) {
+	if len(input) == 1 {
+		return nil, ErrInvalidString
 	}
-	if i < len(input) && input[i] == '\\' {
-		return ErrInvalidString
-	}
-	return nil
-}
-
-func deleteBackslash(l []letterCount) {
-	// return
-	for i := 0; i < len(l); i++ {
-		for j := 0; j < len(l[i].letters); j++ {
-			if l[i].letters[j] == '\\' {
-				l[i].letters = append(l[i].letters[:j], l[i].letters[j+1:]...)
-			}
-		}
-	}
+	count, _ := strconv.Atoi(string(input[len(input)-1]))
+	return &letterCount{letters: input[:len(input)-1], count: count}, nil
 }
 
 func generateString(l []letterCount) string {
@@ -102,12 +87,8 @@ func generateString(l []letterCount) string {
 			builder.WriteString(string(r.letters[:len(r.letters)-1]))
 		}
 		if len(r.letters) > 0 {
-			builder.WriteString(createLetters(r.letters[len(r.letters)-1], r.count))
+			builder.WriteString(strings.Repeat(string(r.letters[len(r.letters)-1]), r.count))
 		}
 	}
 	return builder.String()
-}
-
-func createLetters(letter rune, count int) string {
-	return strings.Repeat(string(letter), count)
 }
