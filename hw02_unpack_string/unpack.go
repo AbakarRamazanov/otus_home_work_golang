@@ -9,6 +9,10 @@ import (
 
 var ErrInvalidString = errors.New("invalid string")
 
+func createLetters(letter rune, count int) string {
+	return strings.Repeat(string(letter), count)
+}
+
 func Unpack(inputString string) (string, error) {
 	inputRunes := []rune(inputString)
 	var result strings.Builder
@@ -21,15 +25,22 @@ func Unpack(inputString string) (string, error) {
 		if unicode.IsDigit(inputRunes[i]) {
 			return "", ErrInvalidString
 		}
-		if unicode.IsDigit(inputRunes[i+1]) {
+		if inputRunes[i] == '\\' {
+			i++
+		}
+		if (i < len(inputRunes)-1) && unicode.IsDigit(inputRunes[i+1]) {
 			count, _ = strconv.Atoi(string(inputRunes[i+1 : i+2]))
 			step = 2
 		}
-		result.WriteString(strings.Repeat(string(inputRunes[i]), count))
+		result.WriteString(createLetters(inputRunes[i], count))
 		i += step
 	}
-	if i < len(inputRunes) && !unicode.IsDigit(inputRunes[len(inputRunes)-1]) {
-		result.WriteString(string(inputRunes[len(inputRunes)-1]))
+	if i < len(inputRunes) {
+		if !unicode.IsDigit(inputRunes[len(inputRunes)-1]) {
+			result.WriteString(createLetters(inputRunes[len(inputRunes)-1], 1))
+		} else {
+			return "", ErrInvalidString
+		}
 	}
 	return result.String(), nil
 }
