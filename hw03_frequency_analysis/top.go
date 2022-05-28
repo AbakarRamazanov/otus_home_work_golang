@@ -21,7 +21,7 @@ func (c contWC) Len() int {
 
 func (c contWC) Less(i, j int) bool {
 	if c.wordCounts[i].count == c.wordCounts[j].count {
-		return strings.Compare(c.wordCounts[i].word, c.wordCounts[j].word) > 0
+		return strings.Compare(c.wordCounts[i].word, c.wordCounts[j].word) < 0
 	}
 	return c.wordCounts[i].count > c.wordCounts[j].count
 }
