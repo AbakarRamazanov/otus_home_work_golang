@@ -7,8 +7,8 @@ import (
 )
 
 type wordCount struct {
-	word  string
 	count int
+	word  string
 }
 
 type contWC struct {
