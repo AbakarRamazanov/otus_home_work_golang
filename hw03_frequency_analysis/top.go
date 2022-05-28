@@ -21,19 +21,13 @@ func (c contWC) Len() int {
 
 func (c contWC) Less(i, j int) bool {
 	if c.wordCounts[i].count == c.wordCounts[j].count {
-		if strings.Compare(c.wordCounts[i].word, c.wordCounts[j].word) > 0 {
-			return false
-		} else {
-			return true
-		}
+		return strings.Compare(c.wordCounts[i].word, c.wordCounts[j].word) > 0
 	}
 	return c.wordCounts[i].count > c.wordCounts[j].count
 }
 
 func (c contWC) Swap(i, j int) {
-	b := c.wordCounts[j]
-	c.wordCounts[j] = c.wordCounts[i]
-	c.wordCounts[i] = b
+	c.wordCounts[i], c.wordCounts[j] = c.wordCounts[j], c.wordCounts[i]
 }
 
 func (c contWC) getTopWords() []string {
