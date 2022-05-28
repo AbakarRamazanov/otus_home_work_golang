@@ -6,13 +6,13 @@ import (
 	"strings"
 )
 
-type contWC struct {
-	wordCounts []wordCount
+type wordCount struct {
+	word  string
+	count int
 }
 
-type wordCount struct {
-	count int
-	word  string
+type contWC struct {
+	wordCounts []wordCount
 }
 
 func (c contWC) Len() int {
@@ -41,7 +41,7 @@ func (c contWC) getTopWords() []string {
 
 func Top10(input string) []string {
 	words := strings.Fields(input)
-	m := make(map[string]int, 0)
+	m := make(map[string]int)
 	for _, word := range words {
 		m[word]++
 	}
