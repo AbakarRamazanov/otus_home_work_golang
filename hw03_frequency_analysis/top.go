@@ -6,13 +6,13 @@ import (
 	"strings"
 )
 
+type contWC struct {
+	wordCounts []wordCount
+}
+
 type wordCount struct {
 	count int
 	word  string
-}
-
-type contWC struct {
-	wordCounts []wordCount
 }
 
 func (c contWC) Len() int {
