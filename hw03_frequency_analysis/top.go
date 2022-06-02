@@ -11,26 +11,26 @@ type wordCount struct {
 	count int
 }
 
-type contWC struct {
+type sortContainerWordCount struct {
 	wordCounts []wordCount
 }
 
-func (c contWC) Len() int {
+func (c sortContainerWordCount) Len() int {
 	return len(c.wordCounts)
 }
 
-func (c contWC) Less(i, j int) bool {
+func (c sortContainerWordCount) Less(i, j int) bool {
 	if c.wordCounts[i].count == c.wordCounts[j].count {
 		return strings.Compare(c.wordCounts[i].word, c.wordCounts[j].word) < 0
 	}
 	return c.wordCounts[i].count > c.wordCounts[j].count
 }
 
-func (c contWC) Swap(i, j int) {
+func (c sortContainerWordCount) Swap(i, j int) {
 	c.wordCounts[i], c.wordCounts[j] = c.wordCounts[j], c.wordCounts[i]
 }
 
-func (c contWC) getTopWords() []string {
+func (c sortContainerWordCount) getTopWords() []string {
 	min := int(math.Min(float64(len(c.wordCounts)), 10))
 	words := make([]string, min)
 	for i := 0; i < min; i++ {
@@ -49,7 +49,7 @@ func Top10(input string) []string {
 	for key, value := range m {
 		wordCounts = append(wordCounts, wordCount{word: key, count: value})
 	}
-	container := contWC{wordCounts: wordCounts}
+	container := sortContainerWordCount{wordCounts: wordCounts}
 	sort.Sort(container)
 	// Place your code here.
 	return container.getTopWords()
