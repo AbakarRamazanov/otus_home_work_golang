@@ -1,4 +1,4 @@
-module github.com/ramazanovNull/hw01_hello_otus
+module github.com/ramazanovNull/otus_home_work_golang/hw01_hello_otus
 
 go 1.16
 
