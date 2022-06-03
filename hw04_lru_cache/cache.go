@@ -9,7 +9,6 @@ type Key string
 type Cache interface {
 	Set(key Key, value interface{}) bool
 	Get(key Key) (interface{}, bool)
-	PrintQueue()
 	Clear()
 }
 
@@ -18,18 +17,6 @@ type lruCache struct {
 	capacity int
 	queue    List
 	items    map[Key]*ListItem
-}
-
-func (cache lruCache) PrintQueue() {
-	l := cache.queue
-	for i := l.Front(); i != nil; i = i.Next {
-		if i.Next != nil {
-		} else {
-		}
-		if i.Prev != nil {
-		} else {
-		}
-	}
 }
 
 type cacheItem struct {
