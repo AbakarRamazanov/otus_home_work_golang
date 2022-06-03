@@ -14,9 +14,9 @@ type Task func() error
 func Run(tasks []Task, n, m int) error {
 	ch := make(chan interface{}, n-1)
 	var wg sync.WaitGroup
-	var currentErrors int32 = 0
-	var sumWorkTask int32 = 0
-	var m32 int32 = int32(m)
+	var currentErrors int32
+	var sumWorkTask int32
+	m32 := int32(m)
 	for i := 0; atomic.LoadInt32(&currentErrors) <= m32 && i < len(tasks); i++ {
 		ch <- nil
 		wg.Add(1)
