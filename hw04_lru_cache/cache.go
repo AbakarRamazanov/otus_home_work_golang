@@ -9,30 +9,48 @@ type Key string
 type Cache interface {
 	Set(key Key, value interface{}) bool
 	Get(key Key) (interface{}, bool)
+	PrintQueue()
 	Clear()
 }
 
 type lruCache struct {
-	Cache    // Remove me after realization.
 	mutex    *sync.RWMutex
 	capacity int
 	queue    List
 	items    map[Key]*ListItem
 }
 
-// type cacheItem struct {
-// 	key   Key
-// 	value interface{}
-// }
+func (cache lruCache) PrintQueue() {
+	l := cache.queue
+	for i := l.Front(); i != nil; i = i.Next {
+		if i.Next != nil {
+		} else {
+		}
+		if i.Prev != nil {
+		} else {
+		}
+	}
+}
+
+type cacheItem struct {
+	key   Key
+	value interface{}
+}
 
 func (cache lruCache) Set(key Key, value interface{}) bool {
 	cache.mutex.Lock()
 	_, exist := cache.items[key]
 	if exist {
-		cache.items[key].Value = value
+		item := cache.items[key].Value.(*cacheItem)
+		item.value = value
 		cache.queue.MoveToFront(cache.items[key])
 	} else {
-		cache.items[key] = cache.queue.PushFront(value)
+		if cache.capacity == cache.queue.Len() {
+			item := cache.queue.Back().Value.(*cacheItem)
+			delete(cache.items, item.key)
+			cache.queue.Remove(cache.queue.Back())
+		}
+		cache.items[key] = cache.queue.PushFront(&cacheItem{key: key, value: value})
 	}
 	cache.mutex.Unlock()
 	return exist
@@ -41,10 +59,11 @@ func (cache lruCache) Set(key Key, value interface{}) bool {
 func (cache lruCache) Get(key Key) (interface{}, bool) {
 	var result interface{}
 	cache.mutex.RLock()
-	value, exist := cache.items[key]
+	_, exist := cache.items[key]
 	if exist {
 		cache.queue.MoveToFront(cache.items[key])
-		result = value.Value
+		item := cache.items[key].Value.(*cacheItem)
+		result = item.value
 	}
 	cache.mutex.RUnlock()
 	return result, exist
