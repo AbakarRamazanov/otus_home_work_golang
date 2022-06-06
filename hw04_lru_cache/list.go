@@ -74,7 +74,6 @@ func (l *list) Remove(i *ListItem) {
 	}
 	i.Next = nil
 	i.Prev = nil
-	// а что если этого элемента не было в листе?
 	l.length--
 }
 
