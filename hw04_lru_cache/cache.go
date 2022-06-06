@@ -26,6 +26,7 @@ type cacheItem struct {
 
 func (cache lruCache) Set(key Key, value interface{}) bool {
 	cache.mutex.Lock()
+	defer cache.mutex.Unlock()
 	_, exist := cache.items[key]
 	if exist {
 		item := cache.items[key].Value.(*cacheItem)
@@ -39,7 +40,6 @@ func (cache lruCache) Set(key Key, value interface{}) bool {
 		}
 		cache.items[key] = cache.queue.PushFront(&cacheItem{key: key, value: value})
 	}
-	cache.mutex.Unlock()
 	return exist
 }
 
