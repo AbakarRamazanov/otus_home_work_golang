@@ -12,6 +12,11 @@ import (
 	"go.uber.org/goleak"
 )
 
+import (
+// "strconv"
+// faker "github.com/bxcodec/faker/v3"
+)
+
 func TestRun(t *testing.T) {
 	defer goleak.VerifyNone(t)
 
@@ -67,4 +72,75 @@ func TestRun(t *testing.T) {
 		require.Equal(t, runTasksCount, int32(tasksCount), "not all tasks were completed")
 		require.LessOrEqual(t, int64(elapsedTime), int64(sumTime/2), "tasks were run sequentially?")
 	})
+
+	t.Run("max errors count less zero", func(t *testing.T) {
+		tasksCount := 50
+		tasks := make([]Task, 0, tasksCount)
+
+		var runTasksCount int32
+
+		for i := 0; i < tasksCount; i++ {
+			tasks = append(tasks, func() error {
+				time.Sleep(time.Millisecond * time.Duration(rand.Intn(100)))
+				atomic.AddInt32(&runTasksCount, 1)
+				return nil
+			})
+		}
+
+		workersCount := 5
+		maxErrorsCount := -1
+
+		err := Run(tasks, workersCount, maxErrorsCount)
+
+		require.Truef(t, errors.Is(err, ErrErrorsLimitExceeded), "actual err - %v", err)
+		require.LessOrEqual(t, runTasksCount, int32(workersCount+maxErrorsCount), "tasks were run sequentially?")
+	})
+
+	// t.Run("random count errors", func(t *testing.T) {
+	// 	tTool := new(TaskerTool)
+	// 	err := faker.FakeData(tTool)
+	// 	require.NoError(t, err)
+	// 	fmt.Printf("%+v\n", tTool)
+	// 	tasksCount := tTool.TasksCount
+	// 	tasks := make([]Task, 0, tasksCount)
+
+	// 	var runTasksCount int32
+	// 	var sumTime time.Duration
+
+	// 	countErrors := 0
+
+	// 	for i := 0; i < tasksCount; i++ {
+	// 		taskSleep := time.Millisecond * time.Duration(rand.Intn(10))
+	// 		sumTime += taskSleep
+	// 		isErr := false
+	// 		if rand.Int()%2 == 0 {
+	// 			countErrors++
+	// 			isErr = true
+	// 		}
+	// 		tasks = append(tasks, func() error {
+	// 			time.Sleep(taskSleep)
+	// 			atomic.AddInt32(&runTasksCount, 1)
+	// 			isErr := isErr
+	// 			if isErr {
+	// 				return ErrErrorsLimitExceeded
+	// 			}
+	// 			return nil
+	// 		})
+	// 	}
+
+	// 	workersCount := tTool.WorkersCount
+	// 	maxErrorsCount := tTool.MaxErrorsCount
+
+	// 	start := time.Now()
+	// 	err = Run(tasks, workersCount, maxErrorsCount)
+	// 	elapsedTime := time.Since(start)
+	// 	fmt.Printf("countErrors = %d, \t maxErrorsCount = %d\n", countErrors, maxErrorsCount)
+	// 	if countErrors >= maxErrorsCount {
+	// 		require.Truef(t, errors.Is(err, ErrErrorsLimitExceeded), "1: actual err - %v", err)
+	// 	} else {
+	// 		require.NoError(t, err)
+	// 		require.Equal(t, runTasksCount, int32(tasksCount), "3: not all tasks were completed")
+	// 	}
+	// 	require.LessOrEqual(t, int64(elapsedTime), int64(sumTime/2), "4: tasks were run sequentially?")
+	// })
 }
