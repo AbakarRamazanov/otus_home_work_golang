@@ -29,7 +29,13 @@ func TestRun(t *testing.T) {
 		for i := 0; i < tasksCount; i++ {
 			err := fmt.Errorf("error from task %d", i)
 			tasks = append(tasks, func() error {
-				time.Sleep(time.Millisecond * time.Duration(rand.Intn(100)))
+				// time.Sleep(time.Millisecond * time.Duration(rand.Intn(100)))
+				require.Eventually(
+					t,
+					func() bool { return true },
+					time.Millisecond*time.Duration(rand.Intn(100)+100),
+					time.Millisecond,
+				)
 				atomic.AddInt32(&runTasksCount, 1)
 				return err
 			})
