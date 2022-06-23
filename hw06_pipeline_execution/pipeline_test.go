@@ -90,4 +90,21 @@ func TestPipeline(t *testing.T) {
 		require.Len(t, result, 0)
 		require.Less(t, int64(elapsed), int64(abortDur)+int64(fault))
 	})
+
+	t.Run("serial sending, check close channel", func(t *testing.T) {
+		in := make(Bi)
+		done := make(Bi)
+		n := 10
+
+		s := ExecutePipeline(in, done, stages...)
+
+		for i := 0; i < n; i++ {
+			in <- i
+			require.Equal(t, strconv.Itoa((i*2)+100), <-s)
+		}
+		close(in)
+
+		_, ok := <-s
+		require.Falsef(t, ok, "channel is not closed")
+	})
 }
