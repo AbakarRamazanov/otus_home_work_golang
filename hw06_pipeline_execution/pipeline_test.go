@@ -91,7 +91,7 @@ func TestPipeline(t *testing.T) {
 		require.Less(t, int64(elapsed), int64(abortDur)+int64(fault))
 	})
 
-	t.Run("serial sending; check close channel", func(t *testing.T) {
+	t.Run("serial sending check close channel", func(t *testing.T) {
 		in := make(Bi)
 		done := make(Bi)
 		n := 10
