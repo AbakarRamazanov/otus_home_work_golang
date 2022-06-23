@@ -11,7 +11,12 @@ type Stage func(in In) (out Out)
 func ExecutePipeline(in In, done In, stages ...Stage) Out {
 	out := in
 	for i := 0; i < len(stages); i++ {
-		out = proccessStage(done, stages[i](out))
+		select {
+		case <-done:
+			return out
+		default:
+			out = proccessStage(done, stages[i](out))
+		}
 	}
 	return out
 }
