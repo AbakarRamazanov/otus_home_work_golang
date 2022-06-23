@@ -13,7 +13,7 @@ func ExecutePipeline(in In, done In, stages ...Stage) Out {
 	for i := 0; i < len(stages); i++ {
 		select {
 		case <-done:
-			return out
+			return nil
 		default:
 			out = proccessStage(done, stages[i](out))
 		}
