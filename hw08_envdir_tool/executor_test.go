@@ -1,8 +1,12 @@
 package main
 
-import "testing"
+import (
+	"os"
+	"testing"
+)
 
 func TestRunCmd(t *testing.T) {
+	os.Clearenv()
 	var envTest = Environment{
 		"BAR":   EnvValue{"bar", false},
 		"EMPTY": EnvValue{"", false},
@@ -10,6 +14,6 @@ func TestRunCmd(t *testing.T) {
 		"HELLO": EnvValue{`"hello"`, false},
 		"UNSET": EnvValue{"", true},
 	}
-	var cmd = []string{"echo", "-n", `${BAR}`, "${HELLO}"}
+	var cmd = []string{"printenv"}
 	RunCmd(cmd, envTest)
 }
