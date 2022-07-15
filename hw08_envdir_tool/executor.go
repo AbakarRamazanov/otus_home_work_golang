@@ -18,7 +18,9 @@ func RunCmd(cmd []string, env Environment) (returnCode int) {
 		}
 	}
 	var out bytes.Buffer
-	command := exec.Command(cmd[0], cmd[1:]...)
+	cmd0 := cmd[0]
+	command := exec.Command(cmd0, cmd[1:]...)
+	command.Stdin = os.Stdin
 	command.Stdout = &out
 	err := command.Run()
 	if err != nil {

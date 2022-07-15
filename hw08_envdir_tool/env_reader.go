@@ -20,8 +20,10 @@ type EnvValue struct {
 	NeedRemove bool
 }
 
-var bytesNL = []byte{'\n'}
-var bytes00 = []byte{0x00}
+var (
+	bytesNL = []byte{'\n'}
+	bytes00 = []byte{0x00}
+)
 
 // ReadDir reads a specified directory and returns map of env variables.
 // Variables represented as files where filename is name of variable, file first line is a value.
