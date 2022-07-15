@@ -15,5 +15,5 @@ func TestRunCmd(t *testing.T) {
 		"UNSET": EnvValue{"", true},
 	}
 	var cmd = []string{"printenv"}
-	RunCmd(cmd, envTest)
+	require.Equal(t, 0, RunCmd(cmd, envTest))
 }
