@@ -8,7 +8,7 @@ import (
 )
 
 func TestReadDir(t *testing.T) {
-	var envTest = Environment{
+	envTest := Environment{
 		"BAR":   EnvValue{"bar", false},
 		"EMPTY": EnvValue{"", false},
 		"FOO":   EnvValue{"   foo\nwith new line", false},
@@ -29,7 +29,7 @@ func TestGenerateAndReadDir(t *testing.T) {
 	err := os.Mkdir("testdir", 0o777)
 	require.NoError(t, err)
 	defer os.RemoveAll("testdir")
-	var files = []string{"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"}
+	files := []string{"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"}
 	for i := 0; i < 10; i++ {
 		file, err := os.Create("testdir/" + files[i])
 		require.NoError(t, err)

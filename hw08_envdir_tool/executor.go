@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"os/exec"
 )
@@ -10,6 +11,7 @@ func RunCmd(cmd []string, env Environment) (returnCode int) {
 	changeEnv(env)
 	command := createCommand(cmd)
 	if err := command.Run(); err != nil {
+		fmt.Println(err)
 		return -1
 	}
 	return command.ProcessState.ExitCode()
