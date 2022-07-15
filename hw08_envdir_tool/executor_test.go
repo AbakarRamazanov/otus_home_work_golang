@@ -10,6 +10,6 @@ func TestRunCmd(t *testing.T) {
 		"HELLO": EnvValue{`"hello"`, false},
 		"UNSET": EnvValue{"", true},
 	}
-	var cmd = []string{"echo", "-n", `$(BAR)`, "$(HELLO)"}
+	var cmd = []string{"echo", "-n", `${BAR}`, "${HELLO}"}
 	RunCmd(cmd, envTest)
 }
