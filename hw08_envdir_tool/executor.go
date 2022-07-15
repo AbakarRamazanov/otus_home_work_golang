@@ -1,15 +1,29 @@
 package main
 
 import (
-	"bytes"
-	"fmt"
 	"os"
 	"os/exec"
 )
 
 // RunCmd runs a command + arguments (cmd) with environment variables from env.
 func RunCmd(cmd []string, env Environment) (returnCode int) {
-	// Place your code here.
+	changeEnv(env)
+	command := createCommand(cmd)
+	if err := command.Run(); err != nil {
+		return -1
+	}
+	return command.ProcessState.ExitCode()
+}
+
+func createCommand(cmd []string) *exec.Cmd {
+	cmd0 := cmd[0]
+	command := exec.Command(cmd0, cmd[1:]...)
+	command.Stdin = os.Stdin
+	command.Stdout = os.Stdout
+	return command
+}
+
+func changeEnv(env Environment) {
 	for variable, value := range env {
 		if value.NeedRemove {
 			os.Unsetenv(variable)
@@ -17,14 +31,4 @@ func RunCmd(cmd []string, env Environment) (returnCode int) {
 			os.Setenv(variable, value.Value)
 		}
 	}
-	var out bytes.Buffer
-	cmd0 := cmd[0]
-	command := exec.Command(cmd0, cmd[1:]...)
-	command.Stdin = os.Stdin
-	command.Stdout = &out
-	if err := command.Run(); err != nil {
-		return -1
-	}
-	fmt.Println(out.String())
-	return command.ProcessState.ExitCode()
 }
