@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"testing"
+
+	"github.com/stretchr/testify/require"
 )
 
 type UserRole string
@@ -13,11 +15,11 @@ type (
 	User struct {
 		ID     string `json:"id" validate:"len:36"`
 		Name   string
-		Age    int      `validate:"min:18|max:50"`
-		Email  string   `validate:"regexp:^\\w+@\\w+\\.\\w+$"`
-		Role   UserRole `validate:"in:admin,stuff"`
-		Phones []string `validate:"len:11"`
-		meta   json.RawMessage
+		Age    int             `validate:"min:18|max:50"`
+		Email  string          `validate:"regexp:^\\w+@\\w+\\.\\w+$"`
+		Role   UserRole        `validate:"in:admin,stuff"`
+		Phones []string        `validate:"len:11"`
+		meta   json.RawMessage //nolint
 	}
 
 	App struct {
@@ -42,18 +44,92 @@ func TestValidate(t *testing.T) {
 		expectedErr error
 	}{
 		{
-			// Place your code here.
+			in: User{
+				ID:     "012345678901234567890123456789012345",
+				Age:    22,
+				Email:  "email@address.com",
+				Role:   "admin",
+				Phones: []string{"89991112233", "89992233111"},
+			},
+			expectedErr: ValidationErrors{},
 		},
-		// ...
-		// Place your code here.
+		{
+			in: User{
+				ID:     "0123456789012345678901234567890123451",
+				Age:    222,
+				Email:  "emailaddress.com",
+				Role:   "adminl",
+				Phones: []string{"819991112233", "89992233111"},
+			},
+			expectedErr: ValidationErrors{
+				{
+					Field: "ID is 0123456789012345678901234567890123451",
+					Err:   ErrorStringLengthIsNotEqual,
+				},
+				{
+					Field: "Age is 222",
+					Err:   ErrorIntMoreThanMax,
+				},
+				{
+					Field: "Email is emailaddress.com",
+					Err:   ErrorStringRegexpNotMatch,
+				},
+				{
+					Field: "Role is adminl",
+					Err:   ErrorStringNotIncludedInSet,
+				},
+				{
+					Field: "Phones is [819991112233 89992233111]",
+					Err:   ErrorStringLengthIsNotEqual,
+				},
+			},
+		},
+		{
+			in: App{
+				Version: "0.2.7",
+			},
+			expectedErr: ValidationErrors{},
+		},
+		{
+			in: App{
+				Version: "0.2.73",
+			},
+			expectedErr: ValidationErrors{
+				{
+					Field: "Version is 0.2.73",
+					Err:   ErrorStringLengthIsNotEqual,
+				},
+			},
+		},
+		{
+			in:          Token{},
+			expectedErr: ValidationErrors{},
+		},
+		{
+			in: Response{
+				Code: 200,
+			},
+			expectedErr: ValidationErrors{},
+		},
+		{
+			in: Response{
+				Code: 210,
+			},
+			expectedErr: ValidationErrors{
+				{
+					Field: "Code is 210",
+					Err:   ErrorIntNotIncludedInSet,
+				},
+			},
+		},
 	}
 
 	for i, tt := range tests {
 		t.Run(fmt.Sprintf("case %d", i), func(t *testing.T) {
 			tt := tt
 			t.Parallel()
-
-			// Place your code here.
+			err := Validate(tt.in)
+			require.Equal(t, tt.expectedErr, err)
 			_ = tt
 		})
 	}
