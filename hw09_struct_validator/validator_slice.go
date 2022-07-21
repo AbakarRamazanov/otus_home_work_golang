@@ -21,7 +21,7 @@ func validateSlice(value reflect.Value, tag string) error {
 		}
 	case reflect.Array, reflect.Bool, reflect.Chan, reflect.Complex128, reflect.Complex64, reflect.Float32,
 		reflect.Float64, reflect.Func, reflect.Int16, reflect.Int32, reflect.Int64, reflect.Int8, reflect.Interface,
-		reflect.Invalid, reflect.Map, reflect.Pointer, reflect.Slice, reflect.Struct, reflect.Uint, reflect.Uint16,
+		reflect.Invalid, reflect.Map, reflect.Ptr, reflect.Slice, reflect.Struct, reflect.Uint, reflect.Uint16,
 		reflect.Uint32, reflect.Uint64, reflect.Uint8, reflect.Uintptr, reflect.UnsafePointer:
 	}
 	return nil
