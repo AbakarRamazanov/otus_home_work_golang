@@ -46,7 +46,7 @@ func validateString(value string, tag string) error {
 
 func stringCheckLength(value string, length int) error {
 	if utf8.RuneCountInString(value) != length {
-		return fmt.Errorf("validating error: %w", ErrorStringLengthIsNotEqual)
+		return fmt.Errorf("%v: %w", ErrorValidatingError, ErrorStringLengthIsNotEqual)
 	}
 	return nil
 }
@@ -65,5 +65,5 @@ func stringCheckIn(value string, stringSet string) error {
 			return nil
 		}
 	}
-	return fmt.Errorf("validating error: %w", ErrorStringNotIncludedInSet)
+	return fmt.Errorf("%v: %w", ErrorValidatingError, ErrorStringNotIncludedInSet)
 }

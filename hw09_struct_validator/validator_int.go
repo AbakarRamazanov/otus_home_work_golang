@@ -40,7 +40,7 @@ func intCheckMin(value int64, minString string) error {
 		return err
 	}
 	if value < int64(min) {
-		return fmt.Errorf("validating error: %w", ErrorIntLessThanMin)
+		return fmt.Errorf("%v: %w", ErrorValidatingError, ErrorIntLessThanMin)
 	}
 	return nil
 }
@@ -51,7 +51,7 @@ func intCheckMax(value int64, maxString string) error {
 		return err
 	}
 	if value > int64(max) {
-		return fmt.Errorf("validating error: %w", ErrorIntMoreThanMax)
+		return fmt.Errorf("%v: %w", ErrorValidatingError, ErrorIntMoreThanMax)
 	}
 	return nil
 }
@@ -67,5 +67,5 @@ func intCheckIn(value int64, stringSet string) error {
 			return nil
 		}
 	}
-	return fmt.Errorf("validating error: %w", ErrorIntNotIncludedInSet)
+	return fmt.Errorf("%v: %w", ErrorValidatingError, ErrorIntNotIncludedInSet)
 }

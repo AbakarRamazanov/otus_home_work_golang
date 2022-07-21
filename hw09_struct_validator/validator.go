@@ -82,5 +82,9 @@ func Validate(v interface{}) error {
 			reflect.Uint32, reflect.Uint64, reflect.Uint8, reflect.Uintptr, reflect.UnsafePointer:
 		}
 	}
-	return validationErrors
+	if len(validationErrors) != 0 {
+		return validationErrors
+	} else {
+		return nil
+	}
 }

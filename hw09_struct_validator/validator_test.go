@@ -36,6 +36,10 @@ type (
 		Code int    `validate:"in:200,404,500"`
 		Body string `json:"omitempty"`
 	}
+
+	Md5sum struct {
+		Sum string `len:32symbol`
+	}
 )
 
 func TestValidate(t *testing.T) {
@@ -51,7 +55,7 @@ func TestValidate(t *testing.T) {
 				Role:   "admin",
 				Phones: []string{"89991112233", "89992233111"},
 			},
-			expectedErr: ValidationErrors{},
+			expectedErr: nil,
 		},
 		{
 			in: User{
@@ -88,7 +92,7 @@ func TestValidate(t *testing.T) {
 			in: App{
 				Version: "0.2.7",
 			},
-			expectedErr: ValidationErrors{},
+			expectedErr: nil,
 		},
 		{
 			in: App{
@@ -103,13 +107,13 @@ func TestValidate(t *testing.T) {
 		},
 		{
 			in:          Token{},
-			expectedErr: ValidationErrors{},
+			expectedErr: nil,
 		},
 		{
 			in: Response{
 				Code: 200,
 			},
-			expectedErr: ValidationErrors{},
+			expectedErr: nil,
 		},
 		{
 			in: Response{
@@ -121,6 +125,12 @@ func TestValidate(t *testing.T) {
 					Err:   ErrorIntNotIncludedInSet,
 				},
 			},
+		},
+		{
+			in: Md5sum{
+				Sum: "123",
+			},
+			expectedErr: nil,
 		},
 	}
 
