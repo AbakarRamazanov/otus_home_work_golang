@@ -3,6 +3,7 @@ package hw09structvalidator
 import (
 	"encoding/json"
 	"fmt"
+	"strconv"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -38,7 +39,7 @@ type (
 	}
 
 	Md5sum struct {
-		Sum string `len:32symbol`
+		Sum string `validate:"len:32symbol"`
 	}
 )
 
@@ -126,12 +127,6 @@ func TestValidate(t *testing.T) {
 				},
 			},
 		},
-		{
-			in: Md5sum{
-				Sum: "123",
-			},
-			expectedErr: nil,
-		},
 	}
 
 	for i, tt := range tests {
@@ -140,6 +135,30 @@ func TestValidate(t *testing.T) {
 			t.Parallel()
 			err := Validate(tt.in)
 			require.Equal(t, tt.expectedErr, err)
+			_ = tt
+		})
+	}
+}
+
+func TestValidateProgramError(t *testing.T) {
+	tests := []struct {
+		in          interface{}
+		expectedErr error
+	}{
+		{
+			in: Md5sum{
+				Sum: "123",
+			},
+			expectedErr: strconv.ErrSyntax,
+		},
+	}
+
+	for i, tt := range tests {
+		t.Run(fmt.Sprintf("case %d", i), func(t *testing.T) {
+			tt := tt
+			t.Parallel()
+			err := Validate(tt.in)
+			require.ErrorIs(t, err, tt.expectedErr)
 			_ = tt
 		})
 	}

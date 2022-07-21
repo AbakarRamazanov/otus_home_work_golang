@@ -27,64 +27,60 @@ func Validate(v interface{}) error {
 	if value.Kind() != reflect.Struct {
 		return ErrorTypeIsNotStruct
 	}
-	// var err error
 	for i := 0; i < value.NumField(); i++ {
 		tag := value.Type().Field(i).Tag.Get("validate")
 		if tag == "" {
 			continue
 		}
-		switch value.Field(i).Kind() {
-		case reflect.String:
-			err := validateString(value.Field(i).String(), tag)
-			if err != nil {
-				if isValidatingError(err) {
-					validationErrors = append(validationErrors,
-						ValidationError{
-							Field: fmt.Sprintf(`%s is %s`, value.Type().Field(i).Name, value.Field(i).String()),
-							Err:   errors.Unwrap(err),
-						},
-					)
-				} else {
-					return err
-				}
-			}
-		case reflect.Int:
-			err := validateInt(value.Field(i).Int(), tag)
-			if err != nil {
-				if isValidatingError(err) {
-					validationErrors = append(validationErrors,
-						ValidationError{
-							Field: fmt.Sprintf(`%s is %d`, value.Type().Field(i).Name, value.Field(i).Int()),
-							Err:   errors.Unwrap(err),
-						},
-					)
-				} else {
-					return err
-				}
-			}
-		case reflect.Slice:
-			err := validateSlice(value.Field(i), tag)
-			if err != nil {
-				if isValidatingError(err) {
-					validationErrors = append(validationErrors,
-						ValidationError{
-							Field: fmt.Sprintf(`%s is %v`, value.Type().Field(i).Name, value.Field(i).Slice(0, value.Field(i).Len())),
-							Err:   errors.Unwrap(err),
-						},
-					)
-				} else {
-					return err
-				}
-			}
-		case reflect.Array, reflect.Bool, reflect.Chan, reflect.Complex128, reflect.Complex64, reflect.Float32,
-			reflect.Float64, reflect.Func, reflect.Int16, reflect.Int32, reflect.Int64, reflect.Int8, reflect.Interface,
-			reflect.Invalid, reflect.Map, reflect.Ptr, reflect.Struct, reflect.Uint, reflect.Uint16,
-			reflect.Uint32, reflect.Uint64, reflect.Uint8, reflect.Uintptr, reflect.UnsafePointer:
+		validationError, err := checkField(value, i, tag)
+		if err != nil {
+			return err
+		}
+		if validationError != nil {
+			validationErrors = append(validationErrors, *validationError)
 		}
 	}
 	if len(validationErrors) != 0 {
 		return validationErrors
-	} else {
-		return nil
+	}
+	return nil
+}
+
+func checkField(value reflect.Value, i int, tag string) (*ValidationError, error) {
+	switch value.Field(i).Kind() {
+	case reflect.String:
+		err := validateString(value.Field(i).String(), tag)
+		if err != nil {
+			if isValidatingError(err) {
+				return makeVE(value.Type().Field(i).Name, value.Field(i).String(), err), nil
+			}
+			return nil, err
+		}
+	case reflect.Int:
+		err := validateInt(value.Field(i).Int(), tag)
+		if err != nil {
+			return makeVE(value.Type().Field(i).Name, value.Field(i).Int(), err), nil
+		}
+		return nil, err
+	case reflect.Slice:
+		err := validateSlice(value.Field(i), tag)
+		if err != nil {
+			if isValidatingError(err) {
+				return makeVE(value.Type().Field(i).Name, value.Field(i).Slice(0, value.Field(i).Len()), err), nil
+			}
+			return nil, err
+		}
+	case reflect.Array, reflect.Bool, reflect.Chan, reflect.Complex128, reflect.Complex64, reflect.Float32,
+		reflect.Float64, reflect.Func, reflect.Int16, reflect.Int32, reflect.Int64, reflect.Int8, reflect.Interface,
+		reflect.Invalid, reflect.Map, reflect.Ptr, reflect.Struct, reflect.Uint, reflect.Uint16,
+		reflect.Uint32, reflect.Uint64, reflect.Uint8, reflect.Uintptr, reflect.UnsafePointer:
+	}
+	return nil, nil
+}
+
+func makeVE(name string, i interface{}, err error) *ValidationError {
+	return &ValidationError{
+		Field: fmt.Sprintf(`%s is %v`, name, i),
+		Err:   errors.Unwrap(err),
 	}
 }
