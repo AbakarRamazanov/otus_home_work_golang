@@ -70,9 +70,20 @@ func checkField(value reflect.Value, i int, tag string) (*ValidationError, error
 			}
 			return nil, err
 		}
+	case reflect.Struct:
+		tags := getTags(tag)
+		if len(tags) != 0 && tags[0] == `nested` {
+			err := Validate(value.Field(i).Interface())
+			if err != nil {
+				if _, ok := err.(ValidationErrors); ok { //nolint
+					return makeVE(value.Type().Field(i).Name, value.Field(i), fmt.Errorf("efef: %w", err)), nil
+				}
+				return nil, err
+			}
+		}
 	case reflect.Array, reflect.Bool, reflect.Chan, reflect.Complex128, reflect.Complex64, reflect.Float32,
 		reflect.Float64, reflect.Func, reflect.Int16, reflect.Int32, reflect.Int64, reflect.Int8, reflect.Interface,
-		reflect.Invalid, reflect.Map, reflect.Ptr, reflect.Struct, reflect.Uint, reflect.Uint16,
+		reflect.Invalid, reflect.Map, reflect.Ptr, reflect.Uint, reflect.Uint16,
 		reflect.Uint32, reflect.Uint64, reflect.Uint8, reflect.Uintptr, reflect.UnsafePointer:
 	}
 	return nil, nil

@@ -34,8 +34,9 @@ type (
 	}
 
 	Response struct {
-		Code int    `validate:"in:200,404,500"`
-		Body string `json:"omitempty"`
+		Code     int    `validate:"in:200,404,500"`
+		Body     string `json:"omitempty"`
+		UserInfo User   `validate:"nested"`
 	}
 
 	Md5sum struct {
@@ -113,17 +114,56 @@ func TestValidate(t *testing.T) {
 		{
 			in: Response{
 				Code: 200,
+				UserInfo: User{
+					ID:     "012345678901234567890123456789012345",
+					Age:    22,
+					Email:  "email@address.com",
+					Role:   "admin",
+					Phones: []string{"89991112233", "89992233111"},
+				},
 			},
 			expectedErr: nil,
 		},
 		{
 			in: Response{
 				Code: 210,
+				UserInfo: User{
+					ID:     "012345678901234111123567890123456789012345",
+					Age:    222,
+					Email:  "emailaddress.com",
+					Role:   "aewfdmin",
+					Phones: []string{"819991112233", "89992233111"},
+				},
 			},
 			expectedErr: ValidationErrors{
 				{
 					Field: "Code is 210",
 					Err:   ErrorIntNotIncludedInSet,
+				},
+				{
+					Field: "UserInfo is {012345678901234111123567890123456789012345  222 emailaddress.com aewfdmin [819991112233 89992233111] []}", //nolint
+					Err: ValidationErrors{
+						{
+							Field: "ID is 012345678901234111123567890123456789012345",
+							Err:   ErrorStringLengthIsNotEqual,
+						},
+						{
+							Field: "Age is 222",
+							Err:   ErrorIntMoreThanMax,
+						},
+						{
+							Field: "Email is emailaddress.com",
+							Err:   ErrorStringRegexpNotMatch,
+						},
+						{
+							Field: "Role is aewfdmin",
+							Err:   ErrorStringNotIncludedInSet,
+						},
+						{
+							Field: "Phones is [819991112233 89992233111]",
+							Err:   ErrorStringLengthIsNotEqual,
+						},
+					},
 				},
 			},
 		},
