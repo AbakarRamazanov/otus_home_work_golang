@@ -13,6 +13,8 @@ type ValidationError struct {
 
 type ValidationErrors []ValidationError
 
+var emptyValidationErrors ValidationErrors
+
 func (v ValidationErrors) Error() string {
 	var s string
 	for i := 0; i < len(v); i++ {
@@ -75,7 +77,7 @@ func checkField(value reflect.Value, i int, tag string) (*ValidationError, error
 		if len(tags) != 0 && tags[0] == `nested` {
 			err := Validate(value.Field(i).Interface())
 			if err != nil {
-				if _, ok := err.(ValidationErrors); ok { //nolint
+				if errors.As(err, &emptyValidationErrors) {
 					return makeVE(value.Type().Field(i).Name, value.Field(i), fmt.Errorf("efef: %w", err)), nil
 				}
 				return nil, err
